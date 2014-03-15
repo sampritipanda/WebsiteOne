@@ -12,10 +12,13 @@ before_script:
 - bundle exec rake db:create:all
 - bundle exec rake db:migrate
 - bundle exec rake db:test:prepare
+- bundle exec rake parallel:create
+- bundle exec rake parallel:migrate
+- bundle exec rake parallel:prepare
 
 script:
-- bundle exec rake cucumber
-- bundle exec rake spec
+- bundle exec rake parallel:features 
+- bundle exec rake parallel:spec
 - bundle exec rake jasmine:ci
 deploy:
   provider: heroku
