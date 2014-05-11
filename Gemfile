@@ -70,6 +70,7 @@ group :development, :test do
   gem 'jasmine-jquery-rails' # framework for testing javascript
   gem 'better_errors' # nice output of rails errors in browser
   gem 'binding_of_caller'  #online console and debugging in browser
+  gem 'parallel_tests'
 end
 
 group :production do
