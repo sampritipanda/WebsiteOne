@@ -10,9 +10,9 @@ before_install:
   - bundle_cache_install
 before_script:
   - bundle exec rake db:create:all
-  - bundle exec rake db:parallel:create
+  - bundle exec rake parallel:create
   - bundle exec rake db:migrate
-  - bundle exec rake db:parallel:prepare
+  - bundle exec rake parallel:prepare
 env:
   - TEST_SUITE=parallel:spec[4]
   - TEST_SUITE=jasmine:ci
