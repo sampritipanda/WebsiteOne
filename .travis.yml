@@ -14,9 +14,10 @@ before_script:
   - bundle exec rake db:migrate
   - bundle exec rake parallel:prepare
 env:
-  - TEST_SUITE=parallel:spec[4]
-  - TEST_SUITE=jasmine:ci
-  - TEST_SUITE=parallel:features[4]
+  matrix:
+    - TEST_SUITE=parallel:spec[4]
+    - TEST_SUITE=jasmine:ci
+    - TEST_SUITE=parallel:features[4]
 script: "bundle exec rake $TEST_SUITE"
 after_script:
   - bundle_cache
