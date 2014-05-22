@@ -13,7 +13,10 @@ describe 'OmniAuth authentication' do
       OmniAuth.config.mock_auth[provider.to_sym] = {
           'provider'  => provider,
           'uid'       => @uid,
-          'info'      => { 'email' => "#{name}@mock.com"}
+          'info'      => {
+                           'email' => "#{name}@mock.com",
+                           'urls' => {'GitHub' => ''}
+                         }
       }
     end
   end

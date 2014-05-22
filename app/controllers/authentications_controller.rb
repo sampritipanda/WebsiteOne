@@ -3,23 +3,25 @@ class AuthenticationsController < ApplicationController
 
   def create
     @path = request.env['omniauth.origin'] || root_path
-
-    if request.env['omniauth.params']['youtube']
-      link_to_youtube and return
+    if authentication.present? and authentication.user != current_user
+      flash[:alert] = 'Another account is already associated with these credentials!'
+      redirect_to @path
     end
-
-    if authentication.present?
-      attempt_login_with_auth(@path)
-
-    elsif current_user
-      create_new_authentication_for_current_user(@path)
-
+ 
+    if current_user
+     if request.env['omniauth.params']['youtube']
+        link_to_youtube
+      elsif omniauth['provider']=='github' && current_user.github_profile_url.blank?
+        link_github_profile
+      else
+        create_new_authentication_for_current_user(@path)
+      end
     else
-      create_new_user_with_authentication
-    end
-
-    if current_user && omniauth['provider']=='github' && current_user.github_profile_url.blank?
-      link_github_profile
+      if authentication.present?
+        attempt_login_with_auth(@path)
+      else
+        create_new_user_with_authentication
+      end
     end
   end
 
@@ -62,8 +64,6 @@ class AuthenticationsController < ApplicationController
   private
 
   def link_github_profile
-    omniauth = request.env['omniauth.auth']
-
     url = ''
     begin
       url = omniauth['info']['urls']['GitHub']
@@ -79,6 +79,7 @@ class AuthenticationsController < ApplicationController
       flash[:alert] = 'Linking your GitHub profile has failed'
       Rails.logger.error user.errors.full_messages
     end
+    redirect_to(request.env['omniauth.origin'] || root_path)
   end
 
   def link_to_youtube
@@ -95,17 +96,8 @@ class AuthenticationsController < ApplicationController
   end
 
   def attempt_login_with_auth(path)
-    if current_user.present? and is_current_user_same_as_auth_user?
-      flash[:alert] = 'Another account is already associated with these credentials!'
-      redirect_to path
-    else
-      flash[:notice] = 'Signed in successfully.'
-      sign_in_and_redirect(:user, authentication.user)
-    end
-  end
-
-  def is_current_user_same_as_auth_user?
-    authentication.user != current_user
+    flash[:notice] = 'Signed in successfully.'
+    sign_in_and_redirect(:user, authentication.user)
   end
 
   def create_authentication_for_user
