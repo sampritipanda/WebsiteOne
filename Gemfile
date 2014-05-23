@@ -1,4 +1,4 @@
-source 'https://rubygems.org'
+source 'http://bundler-api.herokuapp.com'
 ruby '2.1.1'
 gem 'rails', '4.1.0'
 # Added after upgrade to rails 4.1
@@ -47,6 +47,10 @@ gem 'yui-compressor'
 gem 'compass-rails'
 gem 'rack-cache'
 gem 'sprockets-image_compressor'
+
+gem 'redis'
+gem 'tubesock', github: 'ngauthier/tubesock'
+gem 'puma'
 
 group :test do
   gem 'capybara' # Simulates user actions for cucumber
