@@ -7,7 +7,7 @@ class ChatController < ApplicationController
       redis_thread = Thread.new do
         # Needs its own redis connection to pub
         # and sub at the same time
-        Redis.new.subscribe "chat" do |on|
+        redis_client.subscribe "chat" do |on|
           on.message do |channel, message|
             tubesock.send_data message
           end
@@ -17,7 +17,7 @@ class ChatController < ApplicationController
       tubesock.onmessage do |m|
         # pub the message when we get one
         # note: this echoes through the sub above
-        Redis.new.publish "chat", m
+        redis_client.publish "chat", m
       end
 
       tubesock.onclose do
