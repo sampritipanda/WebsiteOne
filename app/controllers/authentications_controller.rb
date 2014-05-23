@@ -2,27 +2,24 @@ class AuthenticationsController < ApplicationController
   before_action :authenticate_user!, only: [:destroy]
 
   def create
-    @path = request.env['omniauth.origin'] || root_path
-    if authentication.present? and authentication.user != current_user
-      flash[:alert] = 'Another account is already associated with these credentials!'
-      redirect_to @path
-    end
- 
     if current_user
-     if request.env['omniauth.params']['youtube']
-        link_to_youtube
-      elsif omniauth['provider']=='github' && current_user.github_profile_url.blank?
-        link_github_profile
+      if authentication.present? and authentication.user != current_user
+        flash[:alert] = 'Another account is already associated with these credentials!'
+        redirect_to redirect_path
       else
-        create_new_authentication_for_current_user(@path)
+        create_new_authentication_for_current_user(redirect_path)
       end
     else
       if authentication.present?
-        attempt_login_with_auth(@path)
+        attempt_login_with_auth(redirect_path)
       else
         create_new_user_with_authentication
       end
     end
+  end
+
+  def redirect_path
+    @path ||= request.env['omniauth.origin'] || root_path
   end
 
   def omniauth 
@@ -79,12 +76,10 @@ class AuthenticationsController < ApplicationController
       flash[:alert] = 'Linking your GitHub profile has failed'
       Rails.logger.error user.errors.full_messages
     end
-    redirect_to(request.env['omniauth.origin'] || root_path)
   end
 
   def link_to_youtube
     current_user.update_youtube_id_if(request.env['omniauth.auth']['credentials']['token'])
-    redirect_to(request.env['omniauth.origin'] || root_path)
   end
 
 
@@ -112,7 +107,12 @@ class AuthenticationsController < ApplicationController
     else
       # Bryan: TESTED
       flash[:alert] = 'Unable to create additional profiles.'
-      redirect_to @path
+      redirect_to redirect_path
+    end
+    if omniauth['provider']=='github' && current_user.github_profile_url.blank?
+      link_github_profile
+    elsif request.env['omniauth.params']['youtube']
+      link_to_youtube
     end
   end
 
