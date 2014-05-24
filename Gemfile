@@ -48,7 +48,7 @@ gem 'compass-rails'
 gem 'rack-cache'
 gem 'sprockets-image_compressor'
 
-gem 'redis'
+gem 'event_bus'
 gem 'tubesock', github: 'ngauthier/tubesock'
 gem 'puma'
 

@@ -154,6 +154,7 @@ GEM
     diff-lcs (1.2.5)
     docile (1.1.3)
     erubis (2.7.0)
+    event_bus (1.0.0)
     exception_notification (4.0.1)
       actionmailer (>= 3.0.4)
       activesupport (>= 3.0.4)
@@ -276,7 +277,6 @@ GEM
       thor (>= 0.18.1, < 2.0)
     rake (10.3.1)
     redcarpet (3.1.1)
-    redis (3.0.7)
     ref (1.0.5)
     rest-client (1.6.7)
       mime-types (>= 1.16)
@@ -388,6 +388,7 @@ DEPENDENCIES
   debugger
   delorean
   devise
+  event_bus
   exception_notification
   factory_girl_rails
   faker
@@ -416,7 +417,6 @@ DEPENDENCIES
   rails (= 4.1.0)
   rails_12factor
   redcarpet
-  redis
   rspec-rails
   sass-rails (~> 4.0.0)
   selenium-webdriver
