@@ -68,4 +68,11 @@ class User < ActiveRecord::Base
   def slug_candidates
     [ :display_name, :email_first_part ]
   end
+
+  def retrieve_timezone
+    tz = TimezoneRetrieverService.for(object)
+    self.tz_name = tz.name
+    self.tz_offset = tz.offset
+    self.save
+  end
 end

@@ -128,6 +128,11 @@ GEM
       rails (>= 3.0.0)
     database_cleaner (1.2.0)
     debug_inspector (0.0.2)
+    delayed_job (4.0.1)
+      activesupport (>= 3.0, < 4.2)
+    delayed_job_active_record (4.0.1)
+      activerecord (>= 3.0, < 4.2)
+      delayed_job (>= 3.0, < 4.1)
     delorean (2.1.0)
       chronic
     devise (3.2.4)
@@ -380,6 +385,7 @@ DEPENDENCIES
   coveralls
   cucumber-rails
   database_cleaner
+  delayed_job_active_record
   delorean
   devise
   exception_notification

@@ -28,7 +28,6 @@ class UserPresenter < BasePresenter
   end
 
   def timezone
-    tz = TimezoneRetrieverService.for(object)
-    "#{tz.name}, #{tz.offset}"
+    "#{object.tz_name}, #{object.tz_offset}"
   end
 end
