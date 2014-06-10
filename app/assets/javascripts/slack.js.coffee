@@ -84,7 +84,6 @@ $ ->
     for i in [1.99999] 
       window.clearInterval(i)
       window.clearTimeout(i)
-      window.mozCancelAnimationFrame(i)
     window.setInterval ->
       channel.fetch_messages()
     , 1000
