@@ -6,13 +6,13 @@ class Slack
     @channels = []
 
   fetch_channels: ->
-    SlackAPI.get SlackAPI.parseURL('channels.list', token: API_TOKEN, exclude_archived: 1)
+    SlackAPI.get SlackAPI.parseURL('channels.list', token: API_TOKEN, exclude_archived: 1), "channels"
     channels = window.WebsiteOne.temp_ajax_response
     return unless channels
     @channels = (Channel.parse(channel) for channel in channels)
 
   fetch_users: ->
-    SlackAPI.get SlackAPI.parseURL('users.list', token: API_TOKEN, exclude_archived: 1)
+    SlackAPI.get SlackAPI.parseURL('users.list', token: API_TOKEN, exclude_archived: 1), "members"
     users = window.WebsiteOne.temp_ajax_response
     return unless users
     @users = (User.parse(user) for user in users)
@@ -33,7 +33,7 @@ class SlackAPI
       url += "#{key}=#{params[key]}&"
     url[0...-1] 
 
-  @get: (url) ->
+  @get: (url, key) ->
     $.ajax
       dataType: "json",
       url: url,
@@ -43,8 +43,7 @@ class SlackAPI
           alert response.error
           false
         else
-          delete response.ok
-          window.WebsiteOne.temp_ajax_response = response[Object.keys(response)[0]]
+          window.WebsiteOne.temp_ajax_response = response[key]
 
 class Channel
   constructor: (@id, @name, @purpose) ->
@@ -55,11 +54,11 @@ class Channel
     new Channel(json.id, json.name, json.purpose.value)
 
   fetch_messages: ->
-    timestamp = if @messages.length >= 1 then @messages.slice(-1).timestamp else 0
+    timestamp = if @messages.length >= 1 then @messages.slice(-1)[0].timestamp else 0
     message_count = 10
-    SlackAPI.get SlackAPI.parseURL('channels.history', token: API_TOKEN, channel: @id, oldest: timestamp.toString(), count: message_count)
+    SlackAPI.get SlackAPI.parseURL('channels.history', token: API_TOKEN, channel: @id, oldest: timestamp.toString(), count: message_count), "messages"
     messages = window.WebsiteOne.temp_ajax_response
-    @messages.push (Message.parse(message) for message in messages)...
+    @messages.push ((Message.parse(message) for message in messages).reverse())...
 
 class User
   constructor: (@id, @name, @photo) ->
@@ -69,11 +68,11 @@ class User
 
 class Message
   constructor: (@text, @type, @timestamp, @user) ->
-    $('#chat #messages').append("<li>#{@user}: #{@text}</li>")
+    $('#chat #messages').prepend("<li>#{@user}: #{@text}</li>")
 
   @parse: (json) ->
     unless json.hidden? and json.hidden
-      new Message(json.text, json.type, json.timestamp, json.user)
+      new Message(json.text, json.type, json.ts, json.user)
 
 $ ->
   slack = new Slack()
