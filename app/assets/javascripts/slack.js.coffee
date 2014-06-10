@@ -20,6 +20,9 @@ class Slack
   #fetch_messages: ->
   #  channel.fetch_messages() for channel in @channels
 
+  clear_channel_messages: ->
+    (channel.messages = []) for channel in @channels
+
   find_channel: (id) ->
     return channel for channel in @channels when channel.id == id
 
@@ -53,12 +56,12 @@ class Channel
   @parse: (json) ->
     new Channel(json.id, json.name, json.purpose.value)
 
-  fetch_messages: ->
-    timestamp = if @messages.length >= 1 then @messages.slice(-1)[0].timestamp else 0
+  fetch_messages: (method) ->
+    timestamp = if @messages.length >= 1 then @messages[0].timestamp else 0
     message_count = 10
     SlackAPI.get SlackAPI.parseURL('channels.history', token: API_TOKEN, channel: @id, oldest: timestamp.toString(), count: message_count), "messages"
     messages = window.WebsiteOne.temp_ajax_response
-    @messages.push ((Message.parse(message) for message in messages).reverse())...
+    @messages.unshift((Message.parse(message, method) for message in messages)...)
 
 class User
   constructor: (@id, @name, @photo) ->
@@ -67,12 +70,11 @@ class User
     new User(json.id, json.real_name || json.name, json.profile.image_48)
 
 class Message
-  constructor: (@text, @type, @timestamp, @user) ->
-    $('#chat #messages').prepend("<li>#{@user}: #{@text}</li>")
+  constructor: (@text, @type, @timestamp, @user, @hidden, @method) ->
+    $('#chat #messages')[@method]("<li>#{@user}: #{@text}</li>") unless @hidden
 
-  @parse: (json) ->
-    unless json.hidden? and json.hidden
-      new Message(json.text, json.type, json.ts, json.user)
+  @parse: (json, method) ->
+    new Message(json.text, json.type, json.ts, json.user, (json.hidden? and json.hidden), method)
 
 $ ->
   slack = new Slack()
@@ -81,9 +83,11 @@ $ ->
   $("#chat #channels li a").on "click", ->
     $("#chat #messages").text("")
     channel = slack.find_channel(this.id)
-    for i in [1.99999] 
+    slack.clear_channel_messages()
+    for i in [1..99999] 
       window.clearInterval(i)
       window.clearTimeout(i)
+    channel.fetch_messages("prepend")
     window.setInterval ->
-      channel.fetch_messages()
-    , 1000
+      channel.fetch_messages("append")
+    , 3000
