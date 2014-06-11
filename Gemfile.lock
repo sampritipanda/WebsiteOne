@@ -86,6 +86,8 @@ GEM
     capybara-webkit (1.1.0)
       capybara (~> 2.0, >= 2.0.2)
       json
+    celluloid (0.15.2)
+      timers (~> 1.1.0)
     childprocess (0.5.3)
       ffi (~> 1.0, >= 1.0.11)
     chronic (0.10.2)
@@ -128,11 +130,6 @@ GEM
       rails (>= 3.0.0)
     database_cleaner (1.2.0)
     debug_inspector (0.0.2)
-    delayed_job (4.0.1)
-      activesupport (>= 3.0, < 4.2)
-    delayed_job_active_record (4.0.1)
-      activerecord (>= 3.0, < 4.2)
-      delayed_job (>= 3.0, < 4.1)
     delorean (2.1.0)
       chronic
     devise (3.2.4)
@@ -316,6 +313,8 @@ GEM
       actionpack (>= 3.0)
       activesupport (>= 3.0)
       sprockets (~> 2.8)
+    sucker_punch (1.0.5)
+      celluloid (~> 0.15.2)
     term-ansicolor (1.3.0)
       tins (~> 1.0)
     therubyracer (0.12.1)
@@ -324,6 +323,7 @@ GEM
     thor (0.19.1)
     thread_safe (0.3.3)
     tilt (1.4.1)
+    timers (1.1.0)
     tins (1.2.0)
     treetop (1.4.15)
       polyglot
@@ -385,7 +385,6 @@ DEPENDENCIES
   coveralls
   cucumber-rails
   database_cleaner
-  delayed_job_active_record
   delorean
   devise
   exception_notification
@@ -421,6 +420,7 @@ DEPENDENCIES
   sass-rails (~> 4.0.0)
   selenium-webdriver
   sprockets-image_compressor
+  sucker_punch
   therubyracer
   turbolinks
   uglifier

@@ -3,7 +3,7 @@ class RegistrationsController < Devise::RegistrationsController
     super
     session[:omniauth] = nil unless @user.new_record?
     Mailer.send_welcome_message(@user).deliver unless @user.new_record?
-    @user.delay.retrieve_timezone
+    TimezoneRetrieverJob.new.async.perform(@user)
   end
 
   def update

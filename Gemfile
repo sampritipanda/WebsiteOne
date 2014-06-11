@@ -47,7 +47,7 @@ gem 'compass-rails'
 gem 'rack-cache'
 gem 'sprockets-image_compressor'
 gem 'google_timezone'
-gem 'delayed_job_active_record'
+gem 'sucker_punch'
 
 group :test do
   gem 'capybara' # Simulates user actions for cucumber
