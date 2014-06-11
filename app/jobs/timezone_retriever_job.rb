@@ -4,9 +4,7 @@ class TimezoneRetrieverJob
   def perform(user)
     ActiveRecord::Base.connection_pool.with_connection do
       tz = TimezoneRetrieverService.for(user)
-      user.tz_name = tz.name
-      user.tz_offset = tz.offset
-      user.save
+      user.update_attributes(tz_name: tz.name, tz_offset: tz.offset)
     end
   end
 end
