@@ -7,12 +7,10 @@ describe ScrumsController do
     context '@scrums instance variable' do
       before { get :index }
 
-      context "#{Rails.env} one video" do
+      context 'one video' do
         subject { assigns(:scrums).first }
 
         it 'has an author' do
-          puts "RAILS.ENV=#{Rails.env}"
-          puts "\n"
           expect(subject[:author]).not_to be_empty
         end
 
