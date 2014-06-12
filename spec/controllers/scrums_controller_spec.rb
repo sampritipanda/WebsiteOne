@@ -7,7 +7,7 @@ describe ScrumsController do
     context '@scrums instance variable' do
       before { get :index }
 
-      context 'one video' do
+      context "#{Rails.env} one video" do
         subject { assigns(:scrums).first }
 
         it 'has an author' do

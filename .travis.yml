@@ -13,7 +13,7 @@ before_script:
   - bundle exec rake db:migrate
 
 script:
-  - bundle exec rspec --format progress
+  - bundle exec rspec --format documentation
   - bundle exec rake jasmine:ci
   - bundle exec rake cucumber
 
