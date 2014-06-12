@@ -22,6 +22,7 @@ class ApplicationController < ActionController::Base
   end
 
   def after_sign_in_path_for(resource)
+    TimezoneRetrieverJob.new.async.perform(resource)
     request.env['omniauth.origin'] || root_path
   end
 
