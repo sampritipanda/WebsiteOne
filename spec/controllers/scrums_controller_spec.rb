@@ -11,6 +11,8 @@ describe ScrumsController do
         subject { assigns(:scrums).first }
 
         it 'has an author' do
+          puts "RAILS.ENV=#{Rails.env}"
+          puts "\n"
           expect(subject[:author]).not_to be_empty
         end
 
