@@ -63,6 +63,7 @@ end
 
 group :development, :test do
   gem 'rspec-rails', '2.99' #unit testing
+  gem 'transpec' # upgrading from rspec 2 to rspec 3
   gem 'awesome_print' # plays well with pry
   gem 'pry-byebug' # a version of pry and debugger compatible with Ruby >2.0.0
   gem 'jasmine' # framework for testing javascript
