@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Event do
+describe Event, :type => :model do
   before :each do
     @default_tz = ENV['TZ']
     ENV['TZ'] = 'UTC'
@@ -12,7 +12,7 @@ describe Event do
   end
 
   it 'should respond to friendly_id' do
-    Event.new.should respond_to :friendly_id
+    expect(Event.new).to respond_to :friendly_id
   end
 
   it 'should respond to "schedule" method' do
@@ -25,17 +25,17 @@ describe Event do
     end
     it 'nil :name' do
       @event.name = ''
-      expect(@event.save).to be_false
+      expect(@event.save).to be_falsey
     end
 
     it 'nil :category' do
       @event.category = nil
-      expect(@event.save).to be_false
+      expect(@event.save).to be_falsey
     end
 
     it 'nil :repeats' do
       @event.repeats = nil
-      expect(@event.save).to be_false
+      expect(@event.save).to be_falsey
     end
   end
 
@@ -125,12 +125,12 @@ describe Event do
 
     it 'should be set if valid' do
       event = Event.create!(@event.merge(:url => 'http://google.com'))
-      expect(event.save).to be_true
+      expect(event.save).to be_truthy
     end
 
     it 'should be rejected if invalid' do
       event = Event.create(@event.merge(:url => 'http:google.com'))
-      event.should have(1).error_on(:url)
+      expect(event).to have(1).error_on(:url)
     end
   end
 
@@ -192,8 +192,8 @@ describe Event do
     end
 
     before(:each) do
-      Event.stub(:exists?).and_return true
-      Event.stub(:where).and_return [ event ]
+      allow(Event).to receive(:exists?).and_return true
+      allow(Event).to receive(:where).and_return [ event ]
     end
 
     it 'should return the next event occurence' do

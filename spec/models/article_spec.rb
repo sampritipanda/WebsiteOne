@@ -1,18 +1,18 @@
 require 'spec_helper'
 
-describe Article do
+describe Article, :type => :model do
 
   let(:article) { Article.new }
 
   it 'should respond to tag_list' do
-    article.should respond_to :tag_list
+    expect(article).to respond_to :tag_list
   end
 
   it 'should respond to user' do
-    article.should respond_to :user
+    expect(article).to respond_to :user
   end
 
   it 'should respond to friendly_id' do
-    article.should respond_to :friendly_id
+    expect(article).to respond_to :friendly_id
   end
 end

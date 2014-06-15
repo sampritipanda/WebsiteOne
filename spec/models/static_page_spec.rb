@@ -1,16 +1,16 @@
 require 'spec_helper'
 
-describe StaticPage do
+describe StaticPage, :type => :model do
   before do
     @page = StaticPage.create!(valid_attributes_for(:static_page))
   end
 
-  it { should be_versioned }
+  it { is_expected.to be_versioned }
 
   context 'return false on invalid inputs' do
     it 'blank Title' do
       @page.title = ''
-      expect(@page.save).to be_false
+      expect(@page.save).to be_falsey
     end
   end
 

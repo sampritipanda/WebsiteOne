@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 #TODO set constraint: unique titles?
-describe Project do
+describe Project, :type => :model do
   context '#save' do
     before(:each) do
       @project = Project.new title: 'Title',
@@ -11,28 +11,28 @@ describe Project do
     let(:project) { @project }
 
     it 'should be a valid record' do
-      project.should be_valid
+      expect(project).to be_valid
     end
 
     context 'returns false on invalid inputs' do
       it 'blank Title' do
         project.title = ''
-        expect(project.save).to be_false
+        expect(project.save).to be_falsey
       end
 
       it 'blank Description' do
         project.description = ''
-        expect(project.save).to be_false
+        expect(project.save).to be_falsey
       end
 
       it 'blank Status' do
         project.status = ''
-        expect(project.save).to be_false
+        expect(project.save).to be_falsey
       end
 
       it 'invalid github url' do
         project.github_url = 'https:/github.com/google/instant-hangouts'
-        expect(project.save).to be_false
+        expect(project.save).to be_falsey
       end
     end
 
@@ -42,13 +42,13 @@ describe Project do
     context 'Pivotal Tracker URL' do
       it 'should correct mistakes in pivotal tracker url' do
         project.pivotaltracker_url = 'www.pivotaltracker.com/s/projects/1234'
-        expect(project.valid?).to be_true
+        expect(project.valid?).to be_truthy
         expect(project.pivotaltracker_url).to eq 'https://www.pivotaltracker.com/s/projects/1234'
       end
 
       it 'should accept the project id and convert that into a valid URL' do
         project.pivotaltracker_url = '1234'
-        expect(project.valid?).to be_true
+        expect(project.valid?).to be_truthy
         expect(project.pivotaltracker_url).to eq 'https://www.pivotaltracker.com/s/projects/1234'
       end
 
@@ -60,7 +60,7 @@ describe Project do
       ).each do |url|
         it "should not accept '#{url}' as a valid Pivotal Tracker URL" do
           project.pivotaltracker_url = url
-          expect(project.valid?).to be_false
+          expect(project.valid?).to be_falsey
         end
       end
     end

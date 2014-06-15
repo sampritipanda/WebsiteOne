@@ -1,22 +1,22 @@
 require 'spec_helper'
 
-describe Document do
+describe Document, :type => :model do
   before do
     @project = Project.create!(valid_attributes_for(:project))
     @document = @project.documents.create!(valid_attributes_for(:document))
   end
 
-  it { should be_versioned }
+  it { is_expected.to be_versioned }
 
   context 'return false on invalid inputs' do
     it 'blank Title' do
       @document.title = ''
-      expect(@document.save).to be_false
+      expect(@document.save).to be_falsey
     end
     
     it 'blank project' do
       @document.project_id = nil
-      expect(@document.save).to be_false
+      expect(@document.save).to be_falsey
     end
   end
 
@@ -34,7 +34,7 @@ describe Document do
 
   context 'return true on correct inputs' do
     it 'belongs to project' do
-      expect(@document.project.nil?).to be_false
+      expect(@document.project.nil?).to be_falsey
     end
   end
 end
