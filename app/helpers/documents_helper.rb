@@ -3,10 +3,6 @@ module DocumentsHelper
     sanitize(html.gsub(/<[^>]*>/, ' '), tags: [], attributes: []).truncate(250, separator: ' ')
   end
 
-  def documents
-    @documents = Document.where("project_id = ?", @project.id).order(:created_at)
-  end
-
   def metadata
     if @document.versions.empty?
       "Created #{time_ago_in_words(@document.created_at)} ago by #{@document.user.display_name}"

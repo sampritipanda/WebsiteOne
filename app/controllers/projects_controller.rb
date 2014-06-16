@@ -1,11 +1,9 @@
 class ProjectsController < ApplicationController
   layout 'with_sidebar'
   before_filter :authenticate_user!, except: [:index, :show]
-  before_action :set_project, only: [:show, :edit, :update, :destroy]
+  before_action :set_project, except: [:index, :new, :create]
+  before_action :set_project_documents, only: [:show]
   before_action :get_current_stories, only: [:show]
-  include DocumentsHelper
-
-#TODO YA Add controller specs for all the code
 
   def index
     @projects = Project.search(params[:search], params[:page])
@@ -13,7 +11,6 @@ class ProjectsController < ApplicationController
   end
 
   def show
-    documents
     @members = @project.followers.reject { |member| !member.display_profile }
     @videos = Youtube.project_videos(@project, @members) if @project
   end
@@ -79,6 +76,10 @@ class ProjectsController < ApplicationController
   private
   def set_project
     @project = Project.friendly.find(params[:id])
+  end
+
+  def set_project_documents
+    @documents = Document.where("project_id = ?", @project.id).order(:created_at)
   end
 
   def get_current_stories
