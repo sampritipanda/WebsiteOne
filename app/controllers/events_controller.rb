@@ -1,8 +1,8 @@
-class EventsController < ApplicationController
-  #require 'delorean'
+require 'delorean'
 
+class EventsController < ApplicationController
   before_action :authenticate_user!, except: [:index, :show]
-  before_action :set_event, only: [:show, :edit, :update, :destroy, :update_only_url]
+  before_action :set_event, except: [:index, :new, :create]
 
   def new
     @event = Event.new
@@ -67,7 +67,6 @@ class EventsController < ApplicationController
     @event = Event.friendly.find(params[:id])
   end
 
-
   def event_params
     params.require(:event).permit!
   end
@@ -78,5 +77,4 @@ class EventsController < ApplicationController
     event_params[:end_time] = EndTime.for(event_params[:end_time])
     event_params
   end
-
 end
