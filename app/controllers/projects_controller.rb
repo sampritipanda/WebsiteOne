@@ -20,12 +20,12 @@ class ProjectsController < ApplicationController
   end
 
   def create
-    @project = Project.new(project_params.merge('user_id' => current_user.id))
+    @project = current_user.projects.build(project_params)
     if @project.save
       redirect_to project_path(@project), notice: 'Project was successfully created.'
     else
       flash.now[:alert] = 'Project was not saved. Please check the input.'
-      render action: 'new'
+      render 'new'
     end
   end
 
