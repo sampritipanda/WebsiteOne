@@ -30,6 +30,8 @@ def path_to(page_name, id = '')
       edit_user_registration_path(id)
     when 'foobar' then
       visit ("/#{page}")
+    when 'hookups' then
+      hookups_path
     else
       raise('path to specified is not listed in #path_to')
   end
@@ -160,8 +162,12 @@ Then /^I should( not)? see link "([^"]*)"$/ do |negative, link|
   end
 end
 
-Then /^I should see field "([^"]*)"$/ do |field|
-  page.should have_field(field)
+Then /^I should( not)? see field "([^"]*)"$/ do |negative, field|
+  unless negative
+    expect(page.has_field? field).to be_true
+  else
+    expect(page.has_field? field).to be_false
+  end
 end
 
 Then /^I should( not)? see buttons:$/ do |negative, table|

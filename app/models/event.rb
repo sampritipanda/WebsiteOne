@@ -9,9 +9,10 @@ class Event < ActiveRecord::Base
   validates :url, uri: true, :allow_blank => true
   validates :repeats_every_n_weeks, :presence => true, :if => lambda { |e| e.repeats == 'weekly' }
   validate :must_have_at_least_one_repeats_weekly_each_days_of_the_week, :if => lambda { |e| e.repeats == 'weekly' }
-  validate :from_must_come_before_to
+  #validate :from_must_come_before_to   // prevents events from bridging UTC midnight
   attr_accessor :next_occurrence_time
 
+  before_save :convert_event_date_to_utc # not necessary any more
   RepeatsOptions = %w[never weekly]
   RepeatEndsOptions = %w[never on]
   DaysOfTheWeek = %w[monday tuesday wednesday thursday friday saturday sunday]
@@ -96,6 +97,127 @@ class Event < ActiveRecord::Base
     DateTime.parse(start_time.strftime('%k:%M ')).in_time_zone(time_zone)
   end
 
+  def self.scrums
+    scrum_list = []
+    Event.where(category: 'Scrum').each { |scrum|
+      scrum.adjust_dates_times
+      scrum_list << scrum
+    }
+    scrum_list
+  end
+
+  def self.hookups
+    Event.where(category: "PairProgramming")
+  end
+
+  def adjust_dates_times
+    self.start_time = convert_time(start_datetime_utc)
+    self.event_date = start_time.to_date
+    self.end_time = self.end_time.nil? ? start_time : convert_time(end_datetime_utc)
+  end
+
+  def self.pending_hookups
+    pending_hookup_list = []
+    hookups.each { |hookup|
+      #hookup.adjust_dates_times
+      pending_hookup_list << hookup if hookup.pending?
+    }
+    pending_hookup_list
+  end
+
+  def self.active_hookups
+    active_hookup_list = []
+    hookups.each { |hookup|
+      #hookup.adjust_dates_times
+      active_hookup_list << hookup if hookup.active? # change to live?
+    }
+    active_hookup_list
+  end
+
+  def started?
+    hangout.try!(:started?)
+  end
+
+  def pending?
+    !started? && !expired?
+  end
+
+  def active?
+    started? && !expired?
+  end
+
+  def expired?
+    Time.now.utc > end_datetime_utc
+    # && ( hangout.try!(:active) if (hangout) )
+  end
+
+  def start_date
+    start_datetime.to_date
+  end
+
+  def end_date
+    if (end_time < start_time)
+      #if (convert_time(end_time) < convert_time(start_time))
+      return (event_date.to_datetime + 1.day).strftime('%Y-%m-%d').to_date
+    else
+      return event_date
+    end
+  end
+
+  def start_datetime
+    start_date_time = Time.new(event_date.year,
+                               event_date.month,
+                               event_date.day,
+                               start_time.hour,
+                               start_time.min,
+                               start_time.sec)
+  end
+
+  def end_datetime
+    end_date_time = Time.new(end_date.year,
+                             end_date.month,
+                             end_date.day,
+                             end_time.hour,
+                             end_time.min,
+                             end_time.sec)
+  end
+
+  def start_datetime_utc
+    start_date_time = Time.utc(event_date.year,
+                               event_date.month,
+                               event_date.day,
+                               start_time.hour,
+                               start_time.min,
+                               start_time.sec)
+  end
+
+  def end_datetime_utc
+    end_date_time = Time.utc(end_date.year,
+                             end_date.month,
+                             end_date.day,
+                             end_time.hour,
+                             end_time.min,
+                             end_time.sec)
+  end
+
+  def convert_event_date_to_utc
+    self.event_date= start_datetime_utc.to_date
+  end
+
+  def start_time_with_timezone
+    DateTime.parse(start_time.strftime('%k:%M ')).in_time_zone(time_zone)
+  end
+
+  def time_range_formatted
+    start_time_format = start_time.strftime('%H:%M')
+    end_time_format = end_time.strftime('%H:%M')
+    " #{start_time_format}-#{end_time_format} UTC"
+  end
+
+  def date_formatted
+    start_date.strftime('%F')
+  end
+
   private
   def must_have_at_least_one_repeats_weekly_each_days_of_the_week
     if repeats_weekly_each_days_of_the_week.empty?
@@ -103,9 +225,4 @@ class Event < ActiveRecord::Base
     end
   end
 
-  def from_must_come_before_to
-    if from > to
-      errors.add(:to_date, 'must come after the from date')
-    end
-  end
 end

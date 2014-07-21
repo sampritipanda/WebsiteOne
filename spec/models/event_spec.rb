@@ -29,7 +29,7 @@ describe Event do
     end
   end
 
-  context 'should create an event that ' do
+  context 'should create a scrum event that ' do
     it 'is scheduled for one occasion' do
       event = Event.create!(name: 'one time event',
                             category: 'Scrum',
@@ -96,6 +96,92 @@ describe Event do
                             time_zone: 'UTC')
       expect(event.schedule.first(5)).to eq(['Mon, 17 Jun 2013 09:00:00 GMT +00:00', 'Mon, 24 Jun 2013 09:00:00 GMT +00:00', 'Mon, 01 Jul 2013 09:00:00 GMT +00:00', 'Mon, 08 Jul 2013 09:00:00 GMT +00:00', 'Mon, 15 Jul 2013 09:00:00 GMT +00:00'])
     end
+  end
+
+  context 'should create a hookup event that ' do
+    it 'should accept and mark as active events that transpire overnight ' do
+      event = Event.create!(name: 'PP Monday event',
+                            category: 'PairProgramming',
+                            description: '',
+                            event_date: 'Mon, 17 Jun 2014',
+                            start_time: '23:30:00 UTC',
+                            end_time: '00:30:00 UTC',
+                            repeats: 'never',
+                            time_zone: 'UTC')
+      hangout = event.build_hangout(hangout_url: 'anything@anything.com')
+      hangout.should_receive(:started?).at_least(:once).and_return(true)
+      Delorean.time_travel_to(Time.parse('2014-06-18 00:00:00 UTC'))
+      expect(event.expired?).to be_false
+      expect(event.started?).to be_true
+      expect(event.active?).to be_true
+    end
+
+    it 'should expire events that ended ' do
+      event = Event.create!(name: 'PP Monday event',
+                            category: 'PairProgramming',
+                            description: '',
+                            event_date: 'Mon, 17 Jun 2014',
+                            start_time: '09:00:00 UTC',
+                            end_time: '2000-01-01 10:30:00 UTC',
+                            repeats: 'never',
+                            time_zone: 'UTC')
+      hangout = event.build_hangout(hangout_url: 'anything@anything.com')
+      hangout.should_receive(:started?).at_least(:once).and_return(true)
+      Delorean.time_travel_to(Time.parse('2014-06-17 10:30:10 UTC'))
+      expect(event.expired?).to be_true
+      expect(event.started?).to be_true
+      expect(event.active?).to be_false
+    end
+
+    it 'should mark as active events which have started and whose have not ended' do
+      event = Event.create!(name: 'PP Monday event',
+                            category: 'PairProgramming',
+                            description: '',
+                            event_date: 'Mon, 17 Jun 2014',
+                            start_time: '2000-01-01 09:00:00 UTC',
+                            end_time: '2000-01-01 10:30:00 UTC',
+                            repeats: 'never',
+                            time_zone: 'UTC')
+      hangout = event.build_hangout(hangout_url: 'anything@anything.com')
+      hangout.should_receive(:started?).at_least(:once).and_return(true)
+      Delorean.time_travel_to(Time.parse('2014-06-17 10:29:50 UTC'))
+      expect(event.expired?).to be_false
+      expect(event.started?).to be_true
+      expect(event.active?).to be_true
+    end
+
+    it 'should not be started if events have not started' do
+      event = Event.create!(name: 'PP Monday event',
+                            category: 'PairProgramming',
+                            description: '',
+                            event_date: 'Mon, 17 Jun 2014',
+                            start_time: '2000-01-01 09:00:00 UTC',
+                            end_time: '2000-01-01 10:30:00 UTC',
+                            repeats: 'never',
+                            time_zone: 'UTC')
+      Delorean.time_travel_to(Time.parse('2014-06-17 8:45:01 UTC'))
+      expect(event.expired?).to be_false
+      expect(event.started?).to be_false
+      expect(event.active?).to be_false
+    end
+
+    it 'should mark as active events that have just started' do
+      event = Event.create!(name: 'PP Monday event',
+                            category: 'PairProgramming',
+                            description: '',
+                            event_date: 'Mon, 17 Jun 2014',
+                            start_time: '2000-01-01 09:00:00 UTC',
+                            end_time: '2000-01-01 10:30:00 UTC',
+                            repeats: 'never',
+                            time_zone: 'UTC')
+      hangout = event.build_hangout(hangout_url: 'anything@anything.com')
+      hangout.should_receive(:started?).at_least(:once).and_return(true)
+      Delorean.time_travel_to(Time.parse('2014-06-17 9:00:01 UTC'))
+      expect(event.expired?).to be_false
+      expect(event.started?).to be_true
+      expect(event.active?).to be_true
+    end
+
   end
 
   context 'Event url' do

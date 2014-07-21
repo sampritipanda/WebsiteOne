@@ -8,6 +8,12 @@ Given(/^following events exist:$/) do |table|
   end
 end
 
+Given(/^following hangouts exist:$/) do |table|
+  table.hashes.each do |hash|
+    Hangout.create!(hash)
+  end
+end
+
 Then(/^I should be on the Events "([^"]*)" page$/) do |page|
   case page.downcase
     when 'index'
@@ -51,4 +57,28 @@ Then(/^I should be on the event "([^"]*)" page for "([^"]*)"$/) do |page, name|
 end
 Given(/^the date is "([^"]*)"$/) do |jump_date|
   Delorean.time_travel_to(Time.parse(jump_date))
+end
+
+
+Given(/^the events are all active$/) do
+  allow_any_instance_of(Event).to receive(:active?).and_return(true)
+end
+
+When(/^I follow "([^"]*)" for pending hookup "([^"]*)"$/) do |linkid, hookup_number|
+  links=page.all(:css, "table#pending_hookups td##{linkid} a")
+  link= links[hookup_number.to_i() -1]
+  link.click
+end
+
+When(/^I follow "([^"]*)" for active hookup "([^"]*)"$/) do |linkid, hookup_number|
+  links=page.all(:css, "table#active_hookups td##{linkid} a")
+  link= links[hookup_number.to_i() -1]
+  link.click
+end
+
+Then(/^I should be on the Edit Events page for "([^"]*)"$/) do |arg|
+  expect(current_path).to eq "/events/#{arg}/edit"
+end
+Then(/^I should be on the Create Events page for "([^"]*)"$/) do |arg|
+  expect(current_path).to eq "/events/#{arg}"
 end
