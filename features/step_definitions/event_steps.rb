@@ -65,14 +65,14 @@ Given(/^the events are all active$/) do
 end
 
 When(/^I follow "([^"]*)" for pending hookup "([^"]*)"$/) do |linkid, hookup_number|
-  links=page.all(:css, "table#pending_hookups td##{linkid} a")
-  link= links[hookup_number.to_i() -1]
+  links = page.all(:css, "table#pending_hookups td##{linkid} a")
+  link = links[hookup_number.to_i - 1]
   link.click
 end
 
 When(/^I follow "([^"]*)" for active hookup "([^"]*)"$/) do |linkid, hookup_number|
-  links=page.all(:css, "table#active_hookups td##{linkid} a")
-  link= links[hookup_number.to_i() -1]
+  links = page.all(:css, "table#active_hookups td##{linkid} a")
+  link = links[hookup_number.to_i - 1]
   link.click
 end
 

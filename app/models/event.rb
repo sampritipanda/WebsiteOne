@@ -12,7 +12,7 @@ class Event < ActiveRecord::Base
   #validate :from_must_come_before_to   // prevents events from bridging UTC midnight
   attr_accessor :next_occurrence_time
 
-  before_save :convert_event_date_to_utc # not necessary any more
+  #before_save :convert_event_date_to_utc # not necessary any more
   RepeatsOptions = %w[never weekly]
   RepeatEndsOptions = %w[never on]
   DaysOfTheWeek = %w[monday tuesday wednesday thursday friday saturday sunday]
@@ -97,43 +97,21 @@ class Event < ActiveRecord::Base
     DateTime.parse(start_time.strftime('%k:%M ')).in_time_zone(time_zone)
   end
 
-  def self.scrums
-    scrum_list = []
-    Event.where(category: 'Scrum').each { |scrum|
-      scrum.adjust_dates_times
-      scrum_list << scrum
-    }
-    scrum_list
-  end
 
   def self.hookups
     Event.where(category: "PairProgramming")
   end
 
-  def adjust_dates_times
-    self.start_time = convert_time(start_datetime_utc)
-    self.event_date = start_time.to_date
-    self.end_time = self.end_time.nil? ? start_time : convert_time(end_datetime_utc)
-  end
 
   def self.pending_hookups
-    pending_hookup_list = []
-    hookups.each { |hookup|
-      #hookup.adjust_dates_times
-      pending_hookup_list << hookup if hookup.pending?
-    }
-    pending_hookup_list
+    hookups.select(&:pending?)
   end
 
   def self.active_hookups
-    active_hookup_list = []
-    hookups.each { |hookup|
-      #hookup.adjust_dates_times
-      active_hookup_list << hookup if hookup.active? # change to live?
-    }
-    active_hookup_list
+    hookups.select(&:active?)
   end
 
+  #Started?:  A One-time event is started when it has an active hangout... in the current implementation, when it has a hangout which has started.  What about a repeating event?  With the current implementation, this is tricky, because it will always have a hookup which has started.
   def started?
     hangout.try!(:started?)
   end
@@ -146,13 +124,17 @@ class Event < ActiveRecord::Base
     started? && !expired?
   end
 
+  # Expired?:  A One-time event expires when the end_datetime is past.  But for repeating events, there are two expired concepts, one for a single instance (e.g. this morning's scrum) expiring, and one for the whole set of repeating events expiring.
   def expired?
-    Time.now.utc > end_datetime_utc
-    # && ( hangout.try!(:active) if (hangout) )
+    if repeats == 'never'
+      Time.now.utc > end_datetime_utc
+    else
+      Time.now.utc > repeat_ends_on
+    end
   end
 
   def start_date
-    start_datetime.to_date
+    start_datetime_utc.to_date
   end
 
   def end_date
@@ -162,24 +144,6 @@ class Event < ActiveRecord::Base
     else
       return event_date
     end
-  end
-
-  def start_datetime
-    start_date_time = Time.new(event_date.year,
-                               event_date.month,
-                               event_date.day,
-                               start_time.hour,
-                               start_time.min,
-                               start_time.sec)
-  end
-
-  def end_datetime
-    end_date_time = Time.new(end_date.year,
-                             end_date.month,
-                             end_date.day,
-                             end_time.hour,
-                             end_time.min,
-                             end_time.sec)
   end
 
   def start_datetime_utc
@@ -198,10 +162,6 @@ class Event < ActiveRecord::Base
                              end_time.hour,
                              end_time.min,
                              end_time.sec)
-  end
-
-  def convert_event_date_to_utc
-    self.event_date= start_datetime_utc.to_date
   end
 
   def start_time_with_timezone

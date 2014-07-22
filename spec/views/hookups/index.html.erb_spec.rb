@@ -21,12 +21,6 @@ describe "hookups/index", type: :view do
     expect(rendered).to have_text("09:00-10:00")
     expect(rendered).not_to have_link("Create Hangout") # NOT LOGGED IN
   end
-=begin
-  it "displays new hookup button" do
-    render
-    expect(rendered).to have_button("New Hookup")
-  end
-=end
 end
 
 
