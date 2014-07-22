@@ -111,9 +111,9 @@ describe Event do
       hangout = event.build_hangout(hangout_url: 'anything@anything.com')
       hangout.should_receive(:started?).at_least(:once).and_return(true)
       Delorean.time_travel_to(Time.parse('2014-06-18 00:00:00 UTC'))
-      expect(event.expired?).to be_false
-      expect(event.started?).to be_true
-      expect(event.active?).to be_true
+      expect(event.expired?).to be_falsey
+      expect(event.started?).to be_truthy
+      expect(event.active?).to be_truthy
     end
 
     it 'should expire events that ended ' do
@@ -128,9 +128,9 @@ describe Event do
       hangout = event.build_hangout(hangout_url: 'anything@anything.com')
       hangout.should_receive(:started?).at_least(:once).and_return(true)
       Delorean.time_travel_to(Time.parse('2014-06-17 10:30:10 UTC'))
-      expect(event.expired?).to be_true
-      expect(event.started?).to be_true
-      expect(event.active?).to be_false
+      expect(event.expired?).to be_truthy
+      expect(event.started?).to be_truthy
+      expect(event.active?).to be_falsey
     end
 
     it 'should mark as active events which have started and whose have not ended' do
@@ -145,9 +145,9 @@ describe Event do
       hangout = event.build_hangout(hangout_url: 'anything@anything.com')
       hangout.should_receive(:started?).at_least(:once).and_return(true)
       Delorean.time_travel_to(Time.parse('2014-06-17 10:29:50 UTC'))
-      expect(event.expired?).to be_false
-      expect(event.started?).to be_true
-      expect(event.active?).to be_true
+      expect(event.expired?).to be_falsey
+      expect(event.started?).to be_truthy
+      expect(event.active?).to be_truthy
     end
 
     it 'should not be started if events have not started' do
@@ -160,9 +160,9 @@ describe Event do
                             repeats: 'never',
                             time_zone: 'UTC')
       Delorean.time_travel_to(Time.parse('2014-06-17 8:45:01 UTC'))
-      expect(event.expired?).to be_false
-      expect(event.started?).to be_false
-      expect(event.active?).to be_false
+      expect(event.expired?).to be_falsey
+      expect(event.started?).to be_falsey
+      expect(event.active?).to be_falsey
     end
 
     it 'should mark as active events that have just started' do
@@ -177,9 +177,9 @@ describe Event do
       hangout = event.build_hangout(hangout_url: 'anything@anything.com')
       hangout.should_receive(:started?).at_least(:once).and_return(true)
       Delorean.time_travel_to(Time.parse('2014-06-17 9:00:01 UTC'))
-      expect(event.expired?).to be_false
-      expect(event.started?).to be_true
-      expect(event.active?).to be_true
+      expect(event.expired?).to be_falsey
+      expect(event.started?).to be_truthy
+      expect(event.active?).to be_truthy
     end
 
   end
