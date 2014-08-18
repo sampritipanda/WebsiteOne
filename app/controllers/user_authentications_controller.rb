@@ -1,10 +1,8 @@
-require_relative '../services/omniauth_request' #idk why i have to do this!
-
 class UserAuthenticationsController < Devise::OmniauthCallbacksController
   before_filter :parse_request
 
   def parse_request
-    @auth_request = ::OmniAuthRequest.new(request.env['omniauth.auth'])
+    @auth_request = OmniauthRequest.new(auth_params: request.env['omniauth.auth'])
     youtube if @auth_request.is_youtube?
   end
 
@@ -40,7 +38,7 @@ class UserAuthenticationsController < Devise::OmniauthCallbacksController
   private
 
   def create_user_and_authentication_and_sign_in
-    user = @auth_request.new_user
+    user = @auth_request.create_user
     if user.valid?
       create_authentication_and_sign_in(user)
     else

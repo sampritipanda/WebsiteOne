@@ -1,4 +1,8 @@
-OmniAuthRequest = Struct.new(:auth_params) do
+class OmniauthRequest
+  include ActiveModel::Model
+
+  attr_accessor :auth_params
+
   def is_youtube?
     auth_params['youtube'].present?
   end
@@ -35,8 +39,8 @@ OmniAuthRequest = Struct.new(:auth_params) do
     User.where('email = ?', auth_params['info']['email']).first
   end
 
-  def new_user
-    User.new({
+  def create_user
+    User.create({
       email: auth_params['info']['email'],
       password: Devise.friendly_token
     })

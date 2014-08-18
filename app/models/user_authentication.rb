@@ -6,5 +6,4 @@ class UserAuthentication < ActiveRecord::Base
   validates :authentication_provider, presence: true
 
   serialize :params
-
 end
