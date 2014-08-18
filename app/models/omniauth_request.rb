@@ -16,7 +16,7 @@ class OmniauthRequest
   end
 
   def existing_authentication
-    provider.user_authentications.where(uid: auth_params['uid']).first
+    provider.authentications.where(uid: auth_params['uid']).first
   end
 
   def token_expires_at
@@ -25,7 +25,7 @@ class OmniauthRequest
   end
 
   def create_authentication(user)
-    UserAuthentication.create(
+    Authentication.create(
       user: user,
       authentication_provider: provider,
       uid: auth_params['uid'],

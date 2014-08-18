@@ -1,6 +1,4 @@
 class User < ActiveRecord::Base
-
-  has_many :authentications, class_name: 'UserAuthentication', dependent: :destroy
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable and :omniauthable
   devise :omniauthable, :database_authenticatable, :registerable,
@@ -30,6 +28,7 @@ class User < ActiveRecord::Base
   has_many :projects
   has_many :documents
   has_many :articles
+  has_many :authentications, dependent: :destroy
 
   self.per_page = 30
 

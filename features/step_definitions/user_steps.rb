@@ -28,7 +28,7 @@ end
 Given /^I exist as a user without any authentication$/ do
   create_user
   expect(User.count).to eq 1
-  expect(UserAuthentication.count).to eq 0
+  expect(Authentication.count).to eq 0
 end
 
 Then /^I should have gained a "([^"]*)" authentication$/ do |authentication_name|

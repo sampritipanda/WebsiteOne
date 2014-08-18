@@ -3,9 +3,9 @@ WebsiteOne::Application.routes.draw do
 
   root 'visitors#index'
 
-  devise_for :users, controllers: { omniauth_callbacks: 'user_authentications' , :registrations => 'registrations'}
+  devise_for :users, controllers: { omniauth_callbacks: 'authentications' , :registrations => 'registrations'}
   devise_scope :user do
-    delete '/users/auth/:provider', to: "user_authentications#destroy", as: :user_omniauth_destroy
+    delete '/users/auth/:provider', to: "authentications#destroy", as: :user_omniauth_destroy
   end
 
   resources :users, :only => [:index, :show] , :format => false

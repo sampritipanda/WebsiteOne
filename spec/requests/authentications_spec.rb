@@ -35,7 +35,7 @@ describe 'OmniAuth authentication' do
             expect {
               click_link "#{name}"
             }.to change(User, :count).by(1)
-          }.to change(UserAuthentication, :count).by(1)
+          }.to change(Authentication, :count).by(1)
           page.should have_content('Signed in successfully.')
         end
 
@@ -46,7 +46,7 @@ describe 'OmniAuth authentication' do
             expect {
               click_link "#{name}"
             }.to change(User, :count).by(0)
-          }.to change(UserAuthentication, :count).by(0)
+          }.to change(Authentication, :count).by(0)
           page.should have_content("Could not authenticate you because \"Invalid credentials\"")
         end
 
@@ -60,7 +60,7 @@ describe 'OmniAuth authentication' do
             expect {
               click_link "Remove #{name}"
             }.to change(User, :count).by(0)
-          }.to change(UserAuthentication, :count).by(0)
+          }.to change(Authentication, :count).by(0)
           page.should have_content 'Bad idea!'
         end
       end
@@ -75,7 +75,7 @@ describe 'OmniAuth authentication' do
         before do
           auth_params = OmniAuth.config.mock_auth[provider.to_sym]
           provider_obj = AuthenticationProvider.where(name: auth_params['provider']).first
-          UserAuthentication.create_from_omniauth(auth_params, @user, provider_obj)
+          Authentication.create_from_omniauth(auth_params, @user, provider_obj)
         end
 
         it 'finds the right user if auth exists' do
@@ -85,7 +85,7 @@ describe 'OmniAuth authentication' do
             expect {
               click_link "#{name}"
             }.to change(User, :count).by(0)
-          }.to change(UserAuthentication, :count).by(0)
+          }.to change(Authentication, :count).by(0)
           page.should have_content('Signed in successfully.')
         end
 
@@ -99,7 +99,7 @@ describe 'OmniAuth authentication' do
             expect {
               click_link "Remove #{name}"
             }.to change(User, :count).by(0)
-          }.to change(UserAuthentication, :count).by(-1)
+          }.to change(Authentication, :count).by(-1)
           page.should have_content('Successfully removed profile.')
         end
 
@@ -110,7 +110,7 @@ describe 'OmniAuth authentication' do
             click_link "#{name}"
             visit edit_user_registration_path(@user)
             expect {
-              expect { click_link "#{n}" }.to change(UserAuthentication, :count).by(1)
+              expect { click_link "#{n}" }.to change(Authentication, :count).by(1)
             }.to change(User, :count).by(0)
           end
         end

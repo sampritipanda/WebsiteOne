@@ -23,7 +23,7 @@ en:
         subject: "Reset password instructions"
       unlock_instructions:
         subject: "Unlock Instructions"
-    user_authentications:
+    authentications:
       failure: "Could not authenticate you because \"%{reason}\"."
       success: "Successfully authenticated from %{kind} account."
     passwords:

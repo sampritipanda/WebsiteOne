@@ -1,4 +1,4 @@
-class UserAuthenticationsController < Devise::OmniauthCallbacksController
+class AuthenticationsController < Devise::OmniauthCallbacksController
   before_filter :parse_request
 
   def parse_request
@@ -28,7 +28,7 @@ class UserAuthenticationsController < Devise::OmniauthCallbacksController
   end
 
   def destroy
-    UserAuthentication.destroy_all(
+    Authentication.destroy_all(
       user_id: current_user.id,
       authentication_provider_id: @auth_request.provider.id
     )

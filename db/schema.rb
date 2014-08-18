@@ -36,6 +36,20 @@ ActiveRecord::Schema.define(version: 20140725131327) do
 
   add_index "authentication_providers", ["name"], name: "index_name_on_authentication_providers", using: :btree
 
+  create_table "authentications", force: true do |t|
+    t.integer  "user_id"
+    t.integer  "authentication_provider_id"
+    t.string   "uid"
+    t.string   "token"
+    t.datetime "token_expires_at"
+    t.text     "params"
+    t.datetime "created_at",                 null: false
+    t.datetime "updated_at",                 null: false
+  end
+
+  add_index "authentications", ["authentication_provider_id"], name: "index_authentications_on_authentication_provider_id", using: :btree
+  add_index "authentications", ["user_id"], name: "index_authentications_on_user_id", using: :btree
+
   create_table "documents", force: true do |t|
     t.string   "title"
     t.text     "body"
@@ -145,20 +159,6 @@ ActiveRecord::Schema.define(version: 20140725131327) do
   end
 
   add_index "tags", ["name"], name: "index_tags_on_name", unique: true, using: :btree
-
-  create_table "user_authentications", force: true do |t|
-    t.integer  "user_id"
-    t.integer  "authentication_provider_id"
-    t.string   "uid"
-    t.string   "token"
-    t.datetime "token_expires_at"
-    t.text     "params"
-    t.datetime "created_at",                 null: false
-    t.datetime "updated_at",                 null: false
-  end
-
-  add_index "user_authentications", ["authentication_provider_id"], name: "index_user_authentications_on_authentication_provider_id", using: :btree
-  add_index "user_authentications", ["user_id"], name: "index_user_authentications_on_user_id", using: :btree
 
   create_table "users", force: true do |t|
     t.string   "email",                  default: "",   null: false
