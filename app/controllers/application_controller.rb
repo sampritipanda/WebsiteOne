@@ -25,7 +25,7 @@ class ApplicationController < ActionController::Base
   end
 
   def after_sign_in_path_for(resource)
-    request.env['omniauth.origin'] || session[:previous_url] || root_path
+    session[:previous_url] || root_path
   end
 
   private
@@ -36,7 +36,8 @@ class ApplicationController < ActionController::Base
          new_user_registration_path,
          new_user_password_path,
          destroy_user_session_path,
-         "#{edit_user_password_path}.*"
+         "#{edit_user_password_path}.*",
+         "/users/auth/.*"
     ]
   end
 

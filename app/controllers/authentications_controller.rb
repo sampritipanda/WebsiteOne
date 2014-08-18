@@ -52,7 +52,7 @@ class AuthenticationsController < Devise::OmniauthCallbacksController
   end
 
   def sign_in_with_existing_authentication(user)
-    sign_in(:user, user)
-    redirect_to root_path, notice: 'Signed in successfully.'
+    flash[:notice] = 'Signed in successfully.'
+    sign_in_and_redirect(:user, user)
   end
 end
