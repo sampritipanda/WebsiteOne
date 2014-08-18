@@ -44,7 +44,7 @@ end
 
 Given /^I exist as a user with a "([^"]*)" authentication$/ do |authentication_name|
   auth_params = OmniAuth.config.mock_auth[authentication_name.to_sym]
-  auth_request = OmniAuthRequest.new(auth_params)
+  auth_request = OmniauthRequest.new(auth_params: auth_params)
 
   auth_request.create_authentication(@user)
 end
