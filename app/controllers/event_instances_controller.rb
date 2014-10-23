@@ -17,6 +17,7 @@ class EventInstancesController < ApplicationController
 
   def index
     @event_instances = (params[:live] == 'true') ? EventInstance.live : EventInstance.latest
+    @event_instances = @event_instances.includes(:user, :project, :event)
     render partial: 'hangouts' if request.xhr?
   end
 
